@@ -1,0 +1,138 @@
+// Abstract Class: Recruitment.java
+public abstract class Recruitment {
+    protected int id;
+    protected String name;
+    protected String position;
+    protected int yearsExperience;
+    protected String status;
+
+    public Recruitment(int id, String name, String position, int yearsExperience) {
+        this.id = id;
+        this.name = name;
+        this.position = position;
+        this.yearsExperience = yearsExperience;
+        this.status = "Pending";
+    }
+
+    public abstract void submitApplication();
+    public abstract void processInterview();
+    public abstract void completeHiring();
+}
+
+// JobApplication.java
+public class JobApplication extends Recruitment {
+    public JobApplication(int id, String name, String position, int yearsExperience) {
+        super(id, name, position, yearsExperience);
+    }
+
+    @Override
+    public void submitApplication() {
+        if (yearsExperience < 2) {
+            status = "Rejected";
+            System.out.println(name + " does not meet the minimum experience requirement.");
+        } else if (yearsExperience <= 5) {
+            status = "Pending";
+            System.out.println(name + " has been shortlisted for an interview.");
+        } else {
+            status = "Hired";
+            System.out.println(name + " qualifies directly for hiring.");
+        }
+    }
+
+    @Override
+    public void processInterview() {
+        System.out.println("Interviews are not handled at this stage.");
+    }
+
+    @Override
+    public void completeHiring() {
+        System.out.println("Hiring decisions are made later in the process.");
+    }
+}
+
+// InterviewProcess.java
+import java.util.Random;
+
+public class InterviewProcess extends Recruitment {
+    private int score;
+
+    public InterviewProcess(int id, String name, String position, int yearsExperience) {
+        super(id, name, position, yearsExperience);
+    }
+
+    @Override
+    public void submitApplication() {
+        System.out.println("Application step already completed.");
+    }
+
+    @Override
+    public void processInterview() {
+        if (!status.equals("Pending")) {
+            System.out.println("Candidate is not eligible for an interview.");
+            return;
+        }
+        Random random = new Random();
+        score = random.nextInt(11);
+        System.out.println("Interview Score for " + name + ": " + score);
+        
+        if (score >= 7) {
+            status = "Interviewed";
+            System.out.println(name + " passed the interview and will proceed to hiring.");
+        } else {
+            status = "Rejected";
+            System.out.println(name + " did not pass the interview.");
+        }
+    }
+
+    @Override
+    public void completeHiring() {
+        System.out.println("Hiring stage comes after the interview process.");
+    }
+}
+
+// HiringProcess.java
+public class HiringProcess extends Recruitment {
+    public HiringProcess(int id, String name, String position, int yearsExperience) {
+        super(id, name, position, yearsExperience);
+    }
+
+    @Override
+    public void submitApplication() {
+        System.out.println("Application already processed.");
+    }
+
+    @Override
+    public void processInterview() {
+        System.out.println("Interview step already completed.");
+    }
+
+    @Override
+    public void completeHiring() {
+        if (!status.equals("Interviewed")) {
+            System.out.println("Candidate cannot be hired as they did not pass the interview.");
+            return;
+        }
+        int salary = (yearsExperience > 5) ? 80000 : 50000;
+        status = "Hired";
+        System.out.println("Final Decision: " + name + " has been hired!");
+        System.out.println("Position: " + position);
+        System.out.println("Offered Salary: $" + salary);
+    }
+}
+
+// HRSystem.java (Main class)
+public class HRSystem {
+    public static void main(String[] args) {
+        // Step 1: Applying for a Job
+        JobApplication candidate = new JobApplication(201, "John Doe", "Backend Developer", 3);
+        candidate.submitApplication();
+        
+        // Step 2: Interview Stage
+        InterviewProcess interview = new InterviewProcess(201, "John Doe", "Backend Developer", 3);
+        interview.processInterview();
+        
+        // Step 3: Final Hiring Decision
+        HiringProcess hiring = new HiringProcess(201, "John Doe", "Backend Developer", 3);
+        hiring.completeHiring();
+    }
+}
